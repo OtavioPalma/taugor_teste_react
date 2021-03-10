@@ -1,0 +1,64 @@
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #202d3c;
+  color: #f2f6fe;
+  -webkit-font-smoothing: antialiased;
+}
+
+body,
+input,
+button {
+  font: 16px 'Telex', sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 500;
+}
+
+h4,
+h5,
+h6,
+strong {
+  font-family: 'Overpass', sans-serif;
+  font-weight: 500;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Chrome auto fill override */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: #fff !important;
+  font: 16px 'Noto Sans JP', sans-serif;
+}
+
+input:-webkit-autofill::first-line {
+  font: 16px 'Noto Sans JP', sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 2px;
+}
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #999591;
+  border-radius: 16px;
+}
