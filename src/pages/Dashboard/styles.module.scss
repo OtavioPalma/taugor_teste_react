@@ -2,19 +2,29 @@ header {
   height: 120px;
   background-color: #1e2834;
 
-  padding: 20px 40px;
-
   display: flex;
   align-items: center;
+  justify-content: center;
 
-  font-size: 1.75rem;
+  padding: 20px 40px;
 
-  > svg {
-    margin-right: 16px;
-  }
+  > div {
+    flex: 1;
 
-  > button {
-    margin-left: auto;
+    max-width: 1000px;
+
+    display: flex;
+    align-items: center;
+
+    font-size: 1.75rem;
+
+    > svg {
+      margin-right: 16px;
+    }
+
+    > button {
+      margin-left: auto;
+    }
   }
 }
 

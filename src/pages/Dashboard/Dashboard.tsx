@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   FiAlertCircle,
   FiCodesandbox,
@@ -6,12 +6,14 @@ import {
   FiPlus,
   FiTrash,
 } from 'react-icons/fi';
+import { AddModal } from '../../components/AddModal/AddModal';
 import { Button } from '../../components/Button/Button';
 import { useAuth } from '../../hooks/useAuth';
 import { Activity } from '../../models/activity';
 import styles from './styles.module.scss';
 
 export const Dashboard: React.FC = () => {
+  const [showModal, setShowModal] = useState(false);
   const [activities, setActivities] = useState<Activity[]>([
     {
       id: '1wqdf213r',
@@ -24,21 +26,39 @@ export const Dashboard: React.FC = () => {
 
   const { user, signOut } = useAuth();
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleOpenModal = () => {
+    setShowModal(true);
+  };
+
+  const handleSaveActivity = useCallback((activity: Activity) => {
+    setShowModal(false);
+
+    setActivities(state => [...state, activity]);
+  }, []);
+
   return (
     <>
       <header>
-        <FiCodesandbox size={40} />
+        <div>
+          <FiCodesandbox size={40} />
 
-        <span>Bem vindo, {user.email}</span>
+          <span>Bem vindo, {user.email}</span>
 
-        <Button onClick={signOut}>Sair</Button>
+          <Button onClick={signOut}>Sair</Button>
+        </div>
       </header>
 
       <div className={styles.container}>
         <div>
           <h1>Atividades</h1>
 
-          <Button icon={FiPlus}>Adicionar</Button>
+          <Button onClick={handleOpenModal} icon={FiPlus}>
+            Adicionar
+          </Button>
         </div>
 
         <table>
@@ -81,6 +101,12 @@ export const Dashboard: React.FC = () => {
           )}
         </table>
       </div>
+
+      <AddModal
+        onClose={handleCloseModal}
+        onSave={handleSaveActivity}
+        visible={showModal}
+      />
     </>
   );
 };
