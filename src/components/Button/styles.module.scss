@@ -1,12 +1,9 @@
 .container {
-  flex: 1;
-
   display: flex;
   align-items: center;
-  justify-content: space-around;
 
   border: 0;
-  padding: 12px;
+  padding: 12px 24px;
 
   border-radius: 4px;
 
@@ -18,11 +15,15 @@
 
   transition: background-color 0.2s;
 
-  div {
+  &:hover {
+    background-color: #3333ff;
+  }
+
+  > div {
     font-size: 0;
   }
 
-  &:hover {
-    background-color: #3333ff;
+  > svg {
+    margin-left: 8px;
   }
 }
