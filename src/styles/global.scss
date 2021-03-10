@@ -1,8 +1,30 @@
+@font-face {
+  font-family: 'NunitoRegular';
+  src: local('NunitoRegular'),
+    url('../assets/fonts/Nunito-Regular.ttf') format('truetype');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'OverpassRegular';
+  src: local('OverpassRegular'),
+    url('../assets/fonts/Overpass-Regular.ttf') format('truetype');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'TelexRegular';
+  src: local('TelexRegular'),
+    url('../assets/fonts/Telex-Regular.ttf') format('truetype');
+  font-weight: normal;
+}
+
 * {
   margin: 0;
   padding: 0;
   outline: 0;
   box-sizing: border-box;
+  user-select: none;
 }
 
 body {
@@ -14,21 +36,21 @@ body {
 body,
 input,
 button {
-  font: 16px 'Telex', sans-serif;
+  font: 16px 'TelexRegular', sans-serif;
 }
 
 h1,
-h2,
-h3 {
-  font-family: 'Nunito', sans-serif;
+h2 {
+  font-family: 'NunitoRegular', sans-serif;
   font-weight: 500;
 }
 
+h3,
 h4,
 h5,
 h6,
 strong {
-  font-family: 'Overpass', sans-serif;
+  font-family: 'OverpassRegular', sans-serif;
   font-weight: 500;
 }
 
