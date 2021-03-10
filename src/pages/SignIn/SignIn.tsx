@@ -10,6 +10,7 @@ import { FirebaseError, firebaseErrors } from '../../models/firebase';
 import styles from './styles.module.scss';
 
 export const SignIn: React.FC = () => {
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: '', password: '' });
   const [formErrors, setFormErrors] = useState({
     email: undefined,
@@ -29,6 +30,8 @@ export const SignIn: React.FC = () => {
 
   const handleFormSubmit = useCallback(async () => {
     try {
+      setLoading(true);
+
       setFormErrors({ email: undefined, password: undefined });
 
       const schema = Yup.object().shape({
@@ -58,6 +61,8 @@ export const SignIn: React.FC = () => {
         title: 'Erro',
         description: firebaseErrors[(err as FirebaseError).code],
       });
+
+      setLoading(false);
     }
   }, [form, signIn, addToast]);
 
@@ -91,7 +96,9 @@ export const SignIn: React.FC = () => {
         />
 
         <div className={styles.container_submit}>
-          <Button onClick={handleFormSubmit}>Entrar</Button>
+          <Button onClick={handleFormSubmit} loading={loading}>
+            Entrar
+          </Button>
         </div>
 
         <div className={styles.container_signup}>
