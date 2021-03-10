@@ -5,6 +5,8 @@ import * as Yup from 'yup';
 import { Button } from '../../components/Button/Button';
 import { Input } from '../../components/Input/Input';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
+import { FirebaseError, firebaseErrors } from '../../models/firebase';
 import styles from './styles.module.scss';
 
 export const SignIn: React.FC = () => {
@@ -15,6 +17,7 @@ export const SignIn: React.FC = () => {
   });
 
   const { signIn } = useAuth();
+  const { addToast } = useToast();
 
   const handleFormChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,11 +49,17 @@ export const SignIn: React.FC = () => {
             [error.path as string]: error.message,
           }));
         });
+
+        return;
       }
 
-      console.log(err);
+      addToast({
+        type: 'error',
+        title: 'Erro',
+        description: firebaseErrors[(err as FirebaseError).code],
+      });
     }
-  }, [form, signIn]);
+  }, [form, signIn, addToast]);
 
   return (
     <div className={styles.container}>
