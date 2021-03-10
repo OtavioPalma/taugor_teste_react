@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useState } from 'react';
-import { auth } from '../config/firebase';
 import { AuthContextData, AuthState } from '../models/auth';
+import { auth } from '../services/firebase';
 
 export const AuthContext = createContext<AuthContextData>(
   {} as AuthContextData,
