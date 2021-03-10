@@ -26,6 +26,12 @@ export const addActivity = (
     created: firebase.firestore.FieldValue.serverTimestamp(),
     createdBy: userId,
     ...activity,
+    events: [
+      {
+        type: 'create',
+        created: new Date(),
+      },
+    ],
   });
 };
 
@@ -48,12 +54,30 @@ export const editActivityStatus = (activity: Activity): Promise<void> => {
   return firestore
     .collection('activities')
     .doc(activity.id)
-    .update({ status: activity.status });
+    .update({
+      status: activity.status,
+      events: [
+        ...activity.events,
+        {
+          type: 'edit-status',
+          created: new Date(),
+        },
+      ],
+    });
 };
 
 export const editActivityUser = (activity: Activity): Promise<void> => {
   return firestore
     .collection('activities')
     .doc(activity.id)
-    .update({ user: activity.user });
+    .update({
+      user: activity.user,
+      events: [
+        ...activity.events,
+        {
+          type: 'edit-user',
+          created: new Date(),
+        },
+      ],
+    });
 };

@@ -4,4 +4,10 @@ export interface Activity {
   description: string;
   status: string;
   user: string;
+  events: ActivityEvent[];
+}
+
+interface ActivityEvent {
+  type: 'create' | 'edit-status' | 'edit-user';
+  created: Date;
 }
