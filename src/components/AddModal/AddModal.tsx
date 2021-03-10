@@ -66,14 +66,25 @@ export const AddModal: React.FC<ModalProps> = ({
     [form],
   );
 
+  const resetForm = () =>
+    setForm({
+      title: '',
+      status: '',
+      description: '',
+      user: '',
+    });
+
+  const resetFormErrors = () =>
+    setFormErrors({
+      title: undefined,
+      status: undefined,
+      description: undefined,
+      user: undefined,
+    });
+
   const handleFormSubmit = useCallback(async () => {
     try {
-      setFormErrors({
-        title: undefined,
-        status: undefined,
-        description: undefined,
-        user: undefined,
-      });
+      resetFormErrors();
 
       const schema = Yup.object().shape({
         title: Yup.string().required('Título é obrigatório'),
@@ -85,6 +96,8 @@ export const AddModal: React.FC<ModalProps> = ({
       await schema.validate(form, { abortEarly: false });
 
       onSave(form as Activity);
+
+      resetForm();
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         err.inner.forEach(error => {
