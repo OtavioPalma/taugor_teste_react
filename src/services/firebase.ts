@@ -37,12 +37,23 @@ export const addActivity = (
 
 export const getActivities = (
   userId: string,
+  status?: string,
 ): Promise<
   firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
 > => {
+  if (status) {
+    return firestore
+      .collection('activities')
+      .where('createdBy', '==', userId)
+      .where('status', '==', status)
+      .orderBy('created')
+      .get();
+  }
+
   return firestore
     .collection('activities')
     .where('createdBy', '==', userId)
+    .orderBy('created')
     .get();
 };
 

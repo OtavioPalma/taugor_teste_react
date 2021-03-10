@@ -6,7 +6,7 @@ import styles from './styles.module.scss';
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   name: string;
   error?: string;
-  icon: IconType;
+  icon?: IconType;
   options: string[];
 }
 
@@ -21,7 +21,7 @@ export const Select: React.FC<SelectProps> = ({
   return (
     <>
       <div className={styles.container}>
-        <Icon size={25} />
+        {Icon && <Icon size={25} />}
 
         <select name={name} {...rest}>
           <option disabled value="">

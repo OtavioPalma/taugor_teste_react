@@ -6,10 +6,12 @@ import {
   FiEdit2,
   FiPlus,
   FiTrash,
+  FiX,
 } from 'react-icons/fi';
 import Loader from 'react-loader-spinner';
 import { AddModal } from '../../components/AddModal/AddModal';
 import { Button } from '../../components/Button/Button';
+import { Select } from '../../components/Select/Select';
 import { StatusModal } from '../../components/StatusModal/StatusModal';
 import { UserModal } from '../../components/UserModal/UserModal';
 import { useAuth } from '../../hooks/useAuth';
@@ -30,6 +32,7 @@ export const Dashboard: React.FC = () => {
   const [showStatusModal, setShowStatusModal] = useState<Activity | null>(null);
   const [showUserModal, setShowUserModal] = useState<Activity | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [filter, setFilter] = useState('');
 
   const { user, signOut } = useAuth();
   const { addToast } = useToast();
@@ -45,7 +48,7 @@ export const Dashboard: React.FC = () => {
 
     setLoading(true);
 
-    getActivities(user.uid).then(res => {
+    getActivities(user.uid, filter).then(res => {
       res.forEach(doc => {
         setActivities(state => [
           ...state,
@@ -55,7 +58,7 @@ export const Dashboard: React.FC = () => {
 
       setLoading(false);
     });
-  }, [user]);
+  }, [user, filter]);
 
   const handleSaveActivity = useCallback(
     async (activity: Activity) => {
@@ -151,6 +154,22 @@ export const Dashboard: React.FC = () => {
           <Button onClick={() => setShowAddModal(true)} icon={FiPlus}>
             Adicionar
           </Button>
+        </div>
+
+        <div>
+          <Select
+            name="status"
+            placeholder="Filtrar por Status"
+            value={filter}
+            onChange={event => setFilter(event.target.value)}
+            options={['Pendente', 'Em andamento', 'Finalizada', 'Cancelada']}
+          />
+
+          {filter && (
+            <Button color="error" icon={FiX} onClick={() => setFilter('')}>
+              Limpar Filtro
+            </Button>
+          )}
         </div>
 
         {loading ? (

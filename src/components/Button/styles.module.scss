@@ -3,14 +3,13 @@
   align-items: center;
 
   border: 0;
-  padding: 12px 24px;
+  padding: 6px 24px;
 
   border-radius: 4px;
 
   background-color: #514fff;
   color: #f2f6fe;
   text-transform: uppercase;
-  font-size: 1.2rem;
   font-weight: 600;
 
   transition: background-color 0.2s;
@@ -25,5 +24,13 @@
 
   > svg {
     margin-left: 8px;
+  }
+}
+
+.error {
+  background-color: #ff4848;
+
+  &:hover {
+    background-color: #ff2a2a;
   }
 }

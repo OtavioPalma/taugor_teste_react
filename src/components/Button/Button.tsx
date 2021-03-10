@@ -6,16 +6,22 @@ import styles from './styles.module.scss';
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: IconType;
   loading?: boolean;
+  color?: string;
 };
 
 export const Button: React.FC<ButtonProps> = ({
   children,
   icon: Icon,
   loading,
+  color,
   ...rest
 }) => {
   return (
-    <button className={styles.container} type="button" {...rest}>
+    <button
+      className={`${styles.container} ${color && styles[color]}`}
+      type="button"
+      {...rest}
+    >
       {loading ? (
         <Loader type="Oval" color="#f2f6fe" height={24} width={24} />
       ) : (
