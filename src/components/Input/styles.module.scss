@@ -1,4 +1,6 @@
 .container {
+  position: relative;
+
   background: #1e2834;
   border-radius: 4px;
 
@@ -27,4 +29,12 @@
       color: #f2f6fe90;
     }
   }
+}
+
+small {
+  position: absolute;
+  color: #ff4848;
+
+  bottom: -20px;
+  left: 0;
 }

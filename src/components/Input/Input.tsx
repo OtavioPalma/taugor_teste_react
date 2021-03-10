@@ -5,12 +5,14 @@ import styles from './styles.module.scss';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
+  error?: string;
   icon: IconType;
 }
 
 export const Input: React.FC<InputProps> = ({
   icon: Icon,
   name,
+  error,
   type,
   ...rest
 }) => {
@@ -23,21 +25,25 @@ export const Input: React.FC<InputProps> = ({
   );
 
   return (
-    <div className={styles.container}>
-      <Icon size={25} />
+    <>
+      <div className={styles.container}>
+        <Icon size={25} />
 
-      <input
-        name={name}
-        type={name === 'password' ? passwordVisible : type}
-        {...rest}
-      />
+        <input
+          name={name}
+          type={name === 'password' ? passwordVisible : type}
+          {...rest}
+        />
 
-      {name === 'password' &&
-        (passwordVisible === 'password' ? (
-          <FiEye onClick={handlePasswordVisibility} size={25} />
-        ) : (
-          <FiEyeOff onClick={handlePasswordVisibility} size={25} />
-        ))}
-    </div>
+        {name === 'password' &&
+          (passwordVisible === 'password' ? (
+            <FiEye onClick={handlePasswordVisibility} size={25} />
+          ) : (
+            <FiEyeOff onClick={handlePasswordVisibility} size={25} />
+          ))}
+
+        {error && <small>{error}</small>}
+      </div>
+    </>
   );
 };
