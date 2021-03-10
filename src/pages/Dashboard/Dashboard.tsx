@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   FiAlertCircle,
+  FiCheckCircle,
   FiCodesandbox,
   FiEdit2,
   FiPlus,
@@ -9,30 +10,30 @@ import {
 import Loader from 'react-loader-spinner';
 import { AddModal } from '../../components/AddModal/AddModal';
 import { Button } from '../../components/Button/Button';
+import { StatusModal } from '../../components/StatusModal/StatusModal';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import { Activity } from '../../models/activity';
 import {
   addActivity,
   deleteActivity,
+  editActivityStatus,
   getActivities,
 } from '../../services/firebase';
 import styles from './styles.module.scss';
 
 export const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState<Activity | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
 
   const { user, signOut } = useAuth();
   const { addToast } = useToast();
 
   const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
-  const handleOpenModal = () => {
-    setShowModal(true);
+    setShowAddModal(false);
+    setShowStatusModal(null);
   };
 
   useEffect(() => {
@@ -54,7 +55,7 @@ export const Dashboard: React.FC = () => {
 
   const handleSaveActivity = useCallback(
     async (activity: Activity) => {
-      setShowModal(false);
+      setShowAddModal(false);
 
       const newActivity = await addActivity(activity, user.uid);
 
@@ -63,17 +64,44 @@ export const Dashboard: React.FC = () => {
     [user],
   );
 
-  const handleDeleteActivity = useCallback(async (activityId: string) => {
-    await deleteActivity(activityId);
+  const handleSaveStatus = useCallback(
+    async (activity: Activity) => {
+      setShowStatusModal(null);
 
-    setActivities(state => [...state.filter(el => el.id !== activityId)]);
+      setActivities(state => {
+        const stateCopy = state;
+        const index = state.findIndex(el => el.id === activity.id);
 
-    addToast({
-      title: 'Remoção concluída',
-      description: 'Atividade removida com sucesso',
-      type: 'success',
-    });
-  }, []);
+        stateCopy[index] = activity;
+
+        return stateCopy;
+      });
+
+      await editActivityStatus(activity);
+
+      addToast({
+        title: 'Atualização concluída',
+        description: 'Status da atividade atualizado com sucesso',
+        type: 'success',
+      });
+    },
+    [addToast],
+  );
+
+  const handleDeleteActivity = useCallback(
+    async (activityId: string) => {
+      await deleteActivity(activityId);
+
+      setActivities(state => [...state.filter(el => el.id !== activityId)]);
+
+      addToast({
+        title: 'Remoção concluída',
+        description: 'Atividade removida com sucesso',
+        type: 'success',
+      });
+    },
+    [addToast],
+  );
 
   return (
     <>
@@ -91,7 +119,7 @@ export const Dashboard: React.FC = () => {
         <div>
           <h1>Atividades</h1>
 
-          <Button onClick={handleOpenModal} icon={FiPlus}>
+          <Button onClick={() => setShowAddModal(true)} icon={FiPlus}>
             Adicionar
           </Button>
         </div>
@@ -132,6 +160,11 @@ export const Dashboard: React.FC = () => {
                     <td>
                       <div>
                         <FiEdit2 size={20} color="#75e46d" />
+                        <FiCheckCircle
+                          size={20}
+                          color="#ffe74c"
+                          onClick={() => setShowStatusModal(activity)}
+                        />
                         <FiTrash
                           size={20}
                           color="#ff4848"
@@ -150,8 +183,17 @@ export const Dashboard: React.FC = () => {
       <AddModal
         onClose={handleCloseModal}
         onSave={handleSaveActivity}
-        visible={showModal}
+        visible={showAddModal}
       />
+
+      {showStatusModal && (
+        <StatusModal
+          onClose={handleCloseModal}
+          onSave={handleSaveStatus}
+          visible={Boolean(showStatusModal)}
+          activity={showStatusModal}
+        />
+      )}
     </>
   );
 };

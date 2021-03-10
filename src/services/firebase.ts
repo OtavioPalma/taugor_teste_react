@@ -43,3 +43,10 @@ export const getActivities = (
 export const deleteActivity = (actitivyId: string): Promise<void> => {
   return firestore.collection('activities').doc(actitivyId).delete();
 };
+
+export const editActivityStatus = (activity: Activity): Promise<void> => {
+  return firestore
+    .collection('activities')
+    .doc(activity.id)
+    .update({ status: activity.status });
+};
