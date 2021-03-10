@@ -1,41 +1,26 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  FiBarChart2,
-  FiCheckCircle,
-  FiFileText,
-  FiUser,
-  FiXCircle,
-} from 'react-icons/fi';
+import { FiUser, FiXCircle } from 'react-icons/fi';
 import * as Yup from 'yup';
 import { Activity } from '../../models/activity';
 import { Button } from '../Button/Button';
 import { Input } from '../Input/Input';
-import { Select } from '../Select/Select';
 import styles from './styles.module.scss';
 
 interface ModalProps {
+  activity: Activity;
   visible: boolean;
   onClose: () => void;
   onSave: (activity: Activity) => void;
 }
 
-export const AddModal: React.FC<ModalProps> = ({
+export const UserModal: React.FC<ModalProps> = ({
+  activity,
   visible,
   onClose,
   onSave,
 }) => {
-  const [form, setForm] = useState({
-    title: '',
-    status: '',
-    description: '',
-    user: '',
-  });
-  const [formErrors, setFormErrors] = useState({
-    title: undefined,
-    status: undefined,
-    description: undefined,
-    user: undefined,
-  });
+  const [form, setForm] = useState({ user: activity.user });
+  const [formErrors, setFormErrors] = useState({ user: undefined });
 
   const overlayRef = useRef(null);
   const handleClick = useCallback(
@@ -63,38 +48,17 @@ export const AddModal: React.FC<ModalProps> = ({
     [form],
   );
 
-  const resetForm = () =>
-    setForm({
-      title: '',
-      status: '',
-      description: '',
-      user: '',
-    });
-
-  const resetFormErrors = () =>
-    setFormErrors({
-      title: undefined,
-      status: undefined,
-      description: undefined,
-      user: undefined,
-    });
-
   const handleFormSubmit = useCallback(async () => {
     try {
-      resetFormErrors();
+      setFormErrors({ user: undefined });
 
       const schema = Yup.object().shape({
-        title: Yup.string().required('Título é obrigatório'),
-        status: Yup.string().required('Status é obrigatório'),
-        description: Yup.string().required('Descrição é obrigatória'),
         user: Yup.string().required('Usuário Responsável é obrigatório'),
       });
 
       await schema.validate(form, { abortEarly: false });
 
-      onSave(form as Activity);
-
-      resetForm();
+      onSave({ ...activity, ...form } as Activity);
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         err.inner.forEach(error => {
@@ -105,7 +69,7 @@ export const AddModal: React.FC<ModalProps> = ({
         });
       }
     }
-  }, [form, onSave]);
+  }, [form, activity, onSave]);
 
   return (
     <>
@@ -113,38 +77,10 @@ export const AddModal: React.FC<ModalProps> = ({
         <div className={styles.overlay} ref={overlayRef}>
           <div className={styles.container}>
             <div className={styles.container_header}>
-              <h1>Adicionar Atividade</h1>
+              <h1>Editar Usuário da Atividade</h1>
 
               <FiXCircle onClick={onClose} size={30} />
             </div>
-
-            <Input
-              icon={FiCheckCircle}
-              name="title"
-              placeholder="Título"
-              value={form.title}
-              error={formErrors.title}
-              onChange={handleFormChange}
-            />
-
-            <Select
-              icon={FiBarChart2}
-              name="status"
-              placeholder="Escolha um Status"
-              value={form.status}
-              error={formErrors.status}
-              onChange={handleFormChange}
-              options={['Pendente', 'Em andamento', 'Finalizada', 'Cancelada']}
-            />
-
-            <Input
-              icon={FiFileText}
-              name="description"
-              placeholder="Descrição"
-              value={form.description}
-              error={formErrors.description}
-              onChange={handleFormChange}
-            />
 
             <Input
               icon={FiUser}

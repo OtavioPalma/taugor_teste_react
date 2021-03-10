@@ -50,3 +50,10 @@ export const editActivityStatus = (activity: Activity): Promise<void> => {
     .doc(activity.id)
     .update({ status: activity.status });
 };
+
+export const editActivityUser = (activity: Activity): Promise<void> => {
+  return firestore
+    .collection('activities')
+    .doc(activity.id)
+    .update({ user: activity.user });
+};

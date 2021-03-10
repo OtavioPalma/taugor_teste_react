@@ -11,6 +11,7 @@ import Loader from 'react-loader-spinner';
 import { AddModal } from '../../components/AddModal/AddModal';
 import { Button } from '../../components/Button/Button';
 import { StatusModal } from '../../components/StatusModal/StatusModal';
+import { UserModal } from '../../components/UserModal/UserModal';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import { Activity } from '../../models/activity';
@@ -18,6 +19,7 @@ import {
   addActivity,
   deleteActivity,
   editActivityStatus,
+  editActivityUser,
   getActivities,
 } from '../../services/firebase';
 import styles from './styles.module.scss';
@@ -26,6 +28,7 @@ export const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState<Activity | null>(null);
+  const [showUserModal, setShowUserModal] = useState<Activity | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
 
   const { user, signOut } = useAuth();
@@ -34,6 +37,7 @@ export const Dashboard: React.FC = () => {
   const handleCloseModal = () => {
     setShowAddModal(false);
     setShowStatusModal(null);
+    setShowUserModal(null);
   };
 
   useEffect(() => {
@@ -82,6 +86,31 @@ export const Dashboard: React.FC = () => {
       addToast({
         title: 'Atualização concluída',
         description: 'Status da atividade atualizado com sucesso',
+        type: 'success',
+      });
+    },
+    [addToast],
+  );
+
+  const handleSaveUser = useCallback(
+    async (activity: Activity) => {
+      setShowUserModal(null);
+
+      setActivities(state => {
+        const stateCopy = state;
+        const index = state.findIndex(el => el.id === activity.id);
+
+        stateCopy[index] = activity;
+
+        return stateCopy;
+      });
+
+      await editActivityUser(activity);
+
+      addToast({
+        title: 'Atualização concluída',
+        description:
+          'Usuário responsável pela atividade atualizado com sucesso',
         type: 'success',
       });
     },
@@ -159,7 +188,11 @@ export const Dashboard: React.FC = () => {
                     <td>{activity.user}</td>
                     <td>
                       <div>
-                        <FiEdit2 size={20} color="#75e46d" />
+                        <FiEdit2
+                          size={20}
+                          color="#75e46d"
+                          onClick={() => setShowUserModal(activity)}
+                        />
                         <FiCheckCircle
                           size={20}
                           color="#ffe74c"
@@ -192,6 +225,15 @@ export const Dashboard: React.FC = () => {
           onSave={handleSaveStatus}
           visible={Boolean(showStatusModal)}
           activity={showStatusModal}
+        />
+      )}
+
+      {showUserModal && (
+        <UserModal
+          onClose={handleCloseModal}
+          onSave={handleSaveUser}
+          visible={Boolean(showUserModal)}
+          activity={showUserModal}
         />
       )}
     </>
