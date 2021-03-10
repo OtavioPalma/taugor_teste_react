@@ -39,3 +39,7 @@ export const getActivities = (
     .where('createdBy', '==', userId)
     .get();
 };
+
+export const deleteActivity = (actitivyId: string): Promise<void> => {
+  return firestore.collection('activities').doc(actitivyId).delete();
+};

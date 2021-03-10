@@ -10,8 +10,13 @@ import Loader from 'react-loader-spinner';
 import { AddModal } from '../../components/AddModal/AddModal';
 import { Button } from '../../components/Button/Button';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 import { Activity } from '../../models/activity';
-import { addActivity, getActivities } from '../../services/firebase';
+import {
+  addActivity,
+  deleteActivity,
+  getActivities,
+} from '../../services/firebase';
 import styles from './styles.module.scss';
 
 export const Dashboard: React.FC = () => {
@@ -20,6 +25,7 @@ export const Dashboard: React.FC = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
 
   const { user, signOut } = useAuth();
+  const { addToast } = useToast();
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -56,6 +62,18 @@ export const Dashboard: React.FC = () => {
     },
     [user],
   );
+
+  const handleDeleteActivity = useCallback(async (activityId: string) => {
+    await deleteActivity(activityId);
+
+    setActivities(state => [...state.filter(el => el.id !== activityId)]);
+
+    addToast({
+      title: 'Remoção concluída',
+      description: 'Atividade removida com sucesso',
+      type: 'success',
+    });
+  }, []);
 
   return (
     <>
@@ -114,7 +132,11 @@ export const Dashboard: React.FC = () => {
                     <td>
                       <div>
                         <FiEdit2 size={20} color="#75e46d" />
-                        <FiTrash size={20} color="#ff4848" />
+                        <FiTrash
+                          size={20}
+                          color="#ff4848"
+                          onClick={() => handleDeleteActivity(activity.id)}
+                        />
                       </div>
                     </td>
                   </tr>
