@@ -171,69 +171,71 @@ export const Dashboard: React.FC = () => {
             <Loader type="Oval" color="#f2f6fe" height={100} width={100} />
           </div>
         ) : (
-          <table className={styles.container_table}>
-            <thead>
-              <tr>
-                <th>Título</th>
-                <th>Status</th>
-                <th>Usuário Responsável</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-
-            {activities.length === 0 ? (
-              <tbody>
+          <div className={styles.container_table}>
+            <table>
+              <thead>
                 <tr>
-                  <td colSpan={4}>
-                    <div>
-                      <FiAlertCircle size={30} />
-                      Nenhum dado cadastrado
-                    </div>
-                  </td>
+                  <th>Título</th>
+                  <th>Status</th>
+                  <th>Usuário Responsável</th>
+                  <th>Ações</th>
                 </tr>
-              </tbody>
-            ) : (
-              <tbody>
-                {activities.map(activity => (
-                  <tr key={activity.id}>
-                    <td>
-                      <Link to={`activity/${activity.id}`}>
-                        <div>
-                          {activity.title}
+              </thead>
 
-                          <FiChevronRight size={20} />
-                        </div>
-                      </Link>
-                    </td>
-
-                    <td>{activity.status}</td>
-
-                    <td>{activity.user}</td>
-
-                    <td>
+              {activities.length === 0 ? (
+                <tbody>
+                  <tr>
+                    <td colSpan={4}>
                       <div>
-                        <FiEdit2
-                          size={20}
-                          color="#75e46d"
-                          onClick={() => setShowUserModal(activity)}
-                        />
-                        <FiCheckCircle
-                          size={20}
-                          color="#ffe74c"
-                          onClick={() => setShowStatusModal(activity)}
-                        />
-                        <FiTrash
-                          size={20}
-                          color="#ff4848"
-                          onClick={() => handleDeleteActivity(activity.id)}
-                        />
+                        <FiAlertCircle size={30} />
+                        Nenhum dado cadastrado
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            )}
-          </table>
+                </tbody>
+              ) : (
+                <tbody>
+                  {activities.map(activity => (
+                    <tr key={activity.id}>
+                      <td>
+                        <Link to={`activity/${activity.id}`}>
+                          <div>
+                            {activity.title}
+
+                            <FiChevronRight size={20} />
+                          </div>
+                        </Link>
+                      </td>
+
+                      <td>{activity.status}</td>
+
+                      <td>{activity.user}</td>
+
+                      <td>
+                        <div>
+                          <FiEdit2
+                            size={20}
+                            color="#75e46d"
+                            onClick={() => setShowUserModal(activity)}
+                          />
+                          <FiCheckCircle
+                            size={20}
+                            color="#ffe74c"
+                            onClick={() => setShowStatusModal(activity)}
+                          />
+                          <FiTrash
+                            size={20}
+                            color="#ff4848"
+                            onClick={() => handleDeleteActivity(activity.id)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
+            </table>
+          </div>
         )}
       </div>
 
