@@ -3,7 +3,6 @@ import {
   FiAlertCircle,
   FiCheckCircle,
   FiChevronRight,
-  FiCodesandbox,
   FiEdit2,
   FiPlus,
   FiTrash,
@@ -13,6 +12,7 @@ import Loader from 'react-loader-spinner';
 import { Link } from 'react-router-dom';
 import { AddModal } from '../../components/AddModal/AddModal';
 import { Button } from '../../components/Button/Button';
+import { Header } from '../../components/Header/Header';
 import { Select } from '../../components/Select/Select';
 import { StatusModal } from '../../components/StatusModal/StatusModal';
 import { UserModal } from '../../components/UserModal/UserModal';
@@ -36,7 +36,7 @@ export const Dashboard: React.FC = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [filter, setFilter] = useState('');
 
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { addToast } = useToast();
 
   const handleCloseModal = () => {
@@ -139,18 +139,10 @@ export const Dashboard: React.FC = () => {
 
   return (
     <>
-      <header>
-        <div>
-          <FiCodesandbox size={40} />
-
-          <span>Bem vindo, {user.email}</span>
-
-          <Button onClick={signOut}>Sair</Button>
-        </div>
-      </header>
+      <Header />
 
       <div className={styles.container}>
-        <div>
+        <div className={styles.container_header}>
           <h1>Atividades</h1>
 
           <Button onClick={() => setShowAddModal(true)} icon={FiPlus}>
@@ -158,7 +150,7 @@ export const Dashboard: React.FC = () => {
           </Button>
         </div>
 
-        <div>
+        <div className={styles.container_filter}>
           <Select
             name="status"
             placeholder="Filtrar por Status"
@@ -175,11 +167,11 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {loading ? (
-          <section>
+          <div className={styles.container_loader}>
             <Loader type="Oval" color="#f2f6fe" height={100} width={100} />
-          </section>
+          </div>
         ) : (
-          <table>
+          <table className={styles.container_table}>
             <thead>
               <tr>
                 <th>Título</th>
@@ -213,8 +205,11 @@ export const Dashboard: React.FC = () => {
                         </div>
                       </Link>
                     </td>
+
                     <td>{activity.status}</td>
+
                     <td>{activity.user}</td>
+
                     <td>
                       <div>
                         <FiEdit2

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { FiAlertCircle, FiArrowLeft, FiCodesandbox } from 'react-icons/fi';
+import { FiAlertCircle, FiArrowLeft } from 'react-icons/fi';
 import Loader from 'react-loader-spinner';
 import { Link, useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import { Button } from '../../components/Button/Button';
-import { useAuth } from '../../hooks/useAuth';
+import { Header } from '../../components/Header/Header';
 import { Activity as ActivityInterface } from '../../models/activity';
 import { getActivity } from '../../services/firebase';
 import styles from './styles.module.scss';
@@ -23,10 +22,7 @@ export const Activity: React.FC = () => {
   const { id } = useParams<ParamTypes>();
 
   const [loading, setLoading] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
   const [activity, setActivity] = useState<ActivityInterface>();
-
-  const { user, signOut } = useAuth();
 
   useEffect(() => {
     setLoading(true);
@@ -42,15 +38,7 @@ export const Activity: React.FC = () => {
 
   return (
     <>
-      <header>
-        <div>
-          <FiCodesandbox size={40} />
-
-          <span>Bem vindo, {user.email}</span>
-
-          <Button onClick={signOut}>Sair</Button>
-        </div>
-      </header>
+      <Header />
 
       <div className={styles.container}>
         <div className={styles.container_header}>
