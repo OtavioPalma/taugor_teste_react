@@ -7,7 +7,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   name: string;
   error?: string;
   icon?: IconType;
-  options: string[];
+  options: { name: string; value: string }[];
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -28,8 +28,8 @@ export const Select: React.FC<SelectProps> = ({
             {placeholder}
           </option>
           {options.map(option => (
-            <option key={uuid()} value={option}>
-              {option}
+            <option key={uuid()} value={option.value}>
+              {option.name}
             </option>
           ))}
         </select>

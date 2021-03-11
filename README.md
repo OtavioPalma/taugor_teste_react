@@ -15,8 +15,8 @@
 
 ### Acesso
 
-- Na página inicial clique em `Não possui uma conta? Cadastre-se` para criar sua conta
-- Cadastre-se com um `e-mail` e uma `senha` válidos e será redirecionado para a página principal
+- Na página inicial clique em `Cadastre-se` para criar sua conta
+- Cadastre-se com um `nome`, `e-mail` e `senha` válidos e será redirecionado para a página principal
 
 ### Página Inicial
 

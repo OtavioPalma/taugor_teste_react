@@ -2,8 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FiUser, FiXCircle } from 'react-icons/fi';
 import * as Yup from 'yup';
 import { Activity } from '../../models/activity';
+import { User } from '../../models/auth';
+import { getUsers } from '../../services/firebase';
 import { Button } from '../Button/Button';
-import { Input } from '../Input/Input';
+import { Select } from '../Select/Select';
 import styles from './styles.module.scss';
 
 interface ModalProps {
@@ -22,6 +24,9 @@ export const UserModal: React.FC<ModalProps> = ({
   const [form, setForm] = useState({ user: activity.user });
   const [formErrors, setFormErrors] = useState({ user: undefined });
 
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+
   const overlayRef = useRef(null);
   const handleClick = useCallback(
     (event: MouseEvent) => {
@@ -31,6 +36,20 @@ export const UserModal: React.FC<ModalProps> = ({
     },
     [onClose],
   );
+
+  useEffect(() => {
+    setUsers([]);
+
+    setLoading(true);
+
+    getUsers().then(res => {
+      res.forEach(doc => {
+        setUsers(state => [...state, { ...(doc.data() as User) }]);
+      });
+
+      setLoading(false);
+    });
+  }, []);
 
   useEffect(() => {
     document.addEventListener('click', handleClick);
@@ -73,30 +92,37 @@ export const UserModal: React.FC<ModalProps> = ({
 
   return (
     <>
-      {visible && (
-        <div className={styles.overlay} ref={overlayRef}>
-          <div className={styles.container}>
-            <div className={styles.container_header}>
-              <h1>Editar Usuário da Atividade</h1>
+      {visible &&
+        (loading ? (
+          <div>loading...</div>
+        ) : (
+          <div className={styles.overlay} ref={overlayRef}>
+            <div className={styles.container}>
+              <div className={styles.container_header}>
+                <h1>Editar Usuário da Atividade</h1>
 
-              <FiXCircle onClick={onClose} size={30} />
-            </div>
+                <FiXCircle onClick={onClose} size={30} />
+              </div>
 
-            <Input
-              icon={FiUser}
-              name="user"
-              placeholder="Usuário Responsável"
-              value={form.user}
-              error={formErrors.user}
-              onChange={handleFormChange}
-            />
+              <Select
+                icon={FiUser}
+                name="user"
+                placeholder="Escolha o Usuário Responsável"
+                value={form.user}
+                error={formErrors.user}
+                onChange={handleFormChange}
+                options={users.map(user => ({
+                  name: user.displayName,
+                  value: user.uid,
+                }))}
+              />
 
-            <div className={styles.container_submit}>
-              <Button onClick={handleFormSubmit}>Salvar</Button>
+              <div className={styles.container_submit}>
+                <Button onClick={handleFormSubmit}>Salvar</Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        ))}
     </>
   );
 };

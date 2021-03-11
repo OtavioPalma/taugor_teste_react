@@ -19,21 +19,33 @@ import { UserModal } from '../../components/UserModal/UserModal';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import { Activity } from '../../models/activity';
+import { User } from '../../models/auth';
 import {
   addActivity,
   deleteActivity,
   editActivityStatus,
   editActivityUser,
   getActivities,
+  getUsers,
 } from '../../services/firebase';
 import styles from './styles.module.scss';
 
+const currentStatus: { [key: string]: string } = {
+  pending: 'Pendente',
+  running: 'Em andamento',
+  finished: 'Finalizado',
+  cancelled: 'Cancelado',
+};
+
 export const Dashboard: React.FC = () => {
-  const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState<Activity | null>(null);
   const [showUserModal, setShowUserModal] = useState<Activity | null>(null);
+
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [users, setUsers] = useState<{ [key: string]: string }>({});
+
+  const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('');
 
   const { user } = useAuth();
@@ -47,10 +59,32 @@ export const Dashboard: React.FC = () => {
 
   useEffect(() => {
     setActivities([]);
+    setUsers({});
 
     setLoading(true);
 
-    getActivities(user.uid, filter).then(res => {
+    Promise.all([getActivities(filter), getUsers()]).then(res => {
+      res[0].forEach(doc => {
+        setActivities(state => [
+          ...state,
+          { ...(doc.data() as Activity), id: doc.id },
+        ]);
+      });
+
+      res[1].forEach(doc => {
+        const docUser = doc.data() as User;
+        setUsers(state => ({ ...state, [docUser.uid]: docUser.displayName }));
+      });
+
+      setLoading(false);
+    });
+  }, [user, filter]);
+
+  const fetchActivities = useCallback(() => {
+    setActivities([]);
+    setLoading(true);
+
+    getActivities().then(res => {
       res.forEach(doc => {
         setActivities(state => [
           ...state,
@@ -60,33 +94,32 @@ export const Dashboard: React.FC = () => {
 
       setLoading(false);
     });
-  }, [user, filter]);
+  }, []);
 
   const handleSaveActivity = useCallback(
     async (activity: Activity) => {
       setShowAddModal(false);
 
-      const newActivity = await addActivity(activity, user.uid);
+      await addActivity(activity, user.uid);
 
-      setActivities(state => [...state, { ...activity, id: newActivity.id }]);
+      fetchActivities();
+
+      addToast({
+        title: 'Atividade criada',
+        description: 'Atividade criada com sucesso',
+        type: 'success',
+      });
     },
-    [user],
+    [user, addToast, fetchActivities],
   );
 
   const handleSaveStatus = useCallback(
     async (activity: Activity) => {
       setShowStatusModal(null);
 
-      setActivities(state => {
-        const stateCopy = state;
-        const index = state.findIndex(el => el.id === activity.id);
+      await editActivityStatus(activity, user.uid);
 
-        stateCopy[index] = activity;
-
-        return stateCopy;
-      });
-
-      await editActivityStatus(activity);
+      fetchActivities();
 
       addToast({
         title: 'Atualização concluída',
@@ -94,23 +127,16 @@ export const Dashboard: React.FC = () => {
         type: 'success',
       });
     },
-    [addToast],
+    [user, addToast, fetchActivities],
   );
 
   const handleSaveUser = useCallback(
     async (activity: Activity) => {
       setShowUserModal(null);
 
-      setActivities(state => {
-        const stateCopy = state;
-        const index = state.findIndex(el => el.id === activity.id);
+      await editActivityUser(activity, user.uid);
 
-        stateCopy[index] = activity;
-
-        return stateCopy;
-      });
-
-      await editActivityUser(activity);
+      fetchActivities();
 
       addToast({
         title: 'Atualização concluída',
@@ -119,14 +145,14 @@ export const Dashboard: React.FC = () => {
         type: 'success',
       });
     },
-    [addToast],
+    [user, addToast, fetchActivities],
   );
 
   const handleDeleteActivity = useCallback(
     async (activityId: string) => {
       await deleteActivity(activityId);
 
-      setActivities(state => [...state.filter(el => el.id !== activityId)]);
+      fetchActivities();
 
       addToast({
         title: 'Remoção concluída',
@@ -134,7 +160,7 @@ export const Dashboard: React.FC = () => {
         type: 'success',
       });
     },
-    [addToast],
+    [addToast, fetchActivities],
   );
 
   return (
@@ -156,7 +182,12 @@ export const Dashboard: React.FC = () => {
             placeholder="Filtrar por Status"
             value={filter}
             onChange={event => setFilter(event.target.value)}
-            options={['Pendente', 'Em andamento', 'Finalizada', 'Cancelada']}
+            options={[
+              { name: 'Pendente', value: 'pending' },
+              { name: 'Em andamento', value: 'running' },
+              { name: 'Finalizada', value: 'finished' },
+              { name: 'Cancelada', value: 'cancelled' },
+            ]}
           />
 
           {filter && (
@@ -185,7 +216,7 @@ export const Dashboard: React.FC = () => {
               {activities.length === 0 ? (
                 <tbody>
                   <tr>
-                    <td colSpan={4}>
+                    <td colSpan={1}>
                       <div>
                         <FiAlertCircle size={30} />
                         Nenhum dado cadastrado
@@ -207,9 +238,9 @@ export const Dashboard: React.FC = () => {
                         </Link>
                       </td>
 
-                      <td>{activity.status}</td>
+                      <td>{currentStatus[activity.status]}</td>
 
-                      <td>{activity.user}</td>
+                      <td>{users[activity.user]}</td>
 
                       <td>
                         <div>

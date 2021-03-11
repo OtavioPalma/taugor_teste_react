@@ -20,6 +20,8 @@
 
   &_filter {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   &_loader {
@@ -96,7 +98,7 @@
 
 @media (max-width: 1000px) {
   .container {
-    min-height: calc(100vh - 200px);
+    min-height: 100vh;
     overflow-x: hidden;
 
     padding: 0 25px;

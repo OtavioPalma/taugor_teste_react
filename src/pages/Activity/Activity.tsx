@@ -5,12 +5,20 @@ import { Link, useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { Header } from '../../components/Header/Header';
 import { Activity as ActivityInterface } from '../../models/activity';
-import { getActivity } from '../../services/firebase';
+import { User } from '../../models/auth';
+import { getActivity, getUsers } from '../../services/firebase';
 import styles from './styles.module.scss';
 
 interface ParamTypes {
   id: string;
 }
+
+const currentStatus: { [key: string]: string } = {
+  pending: 'Pendente',
+  running: 'Em andamento',
+  finished: 'Finalizado',
+  cancelled: 'Cancelado',
+};
 
 const eventTypes: { [key: string]: string } = {
   create: 'Criação da Atividade',
@@ -22,15 +30,22 @@ export const Activity: React.FC = () => {
   const { id } = useParams<ParamTypes>();
 
   const [loading, setLoading] = useState(false);
+
+  const [users, setUsers] = useState<{ [key: string]: string }>({});
   const [activity, setActivity] = useState<ActivityInterface>();
 
   useEffect(() => {
     setLoading(true);
 
-    getActivity(id).then(res => {
-      if (res.exists) {
-        setActivity({ ...(res.data() as ActivityInterface), id: res.id });
+    Promise.all([getActivity(id), getUsers()]).then(res => {
+      if (res[0].exists) {
+        setActivity({ ...(res[0].data() as ActivityInterface), id: res[0].id });
       }
+
+      res[1].forEach(doc => {
+        const docUser = doc.data() as User;
+        setUsers(state => ({ ...state, [docUser.uid]: docUser.displayName }));
+      });
 
       setLoading(false);
     });
@@ -48,30 +63,30 @@ export const Activity: React.FC = () => {
           </Link>
         </div>
 
-        {loading ? (
+        {loading || !activity ? (
           <div className={styles.container_loader}>
             <Loader type="Oval" color="#f2f6fe" height={100} width={100} />
           </div>
         ) : (
           <div className={styles.container_card}>
-            <h1>{activity?.title}</h1>
+            <h1>{activity.title}</h1>
 
             <div className={styles.container_card__info}>
               <p>Status: </p>
 
-              <span>{activity?.status}</span>
+              <span>{currentStatus[activity.status]}</span>
             </div>
 
             <div className={styles.container_card__info}>
               <p>Usuário Responsável: </p>
 
-              <span>{activity?.user}</span>
+              <span>{users[activity.user]}</span>
             </div>
 
             <div className={styles.container_card__info}>
               <p>Descrição da Atividade: </p>
 
-              <span>{activity?.description}</span>
+              <span>{activity.description}</span>
             </div>
 
             <div className={styles.container_card__table}>
@@ -83,6 +98,7 @@ export const Activity: React.FC = () => {
                     <tr>
                       <th>Título</th>
                       <th>Data do Evento</th>
+                      <th>Usuário</th>
                     </tr>
                   </thead>
 
@@ -107,6 +123,7 @@ export const Activity: React.FC = () => {
                               event.created.seconds * 1000,
                             ).toLocaleString()}{' '}
                           </td>
+                          <td>{users[event.user]}</td>
                         </tr>
                       ))}
                     </tbody>

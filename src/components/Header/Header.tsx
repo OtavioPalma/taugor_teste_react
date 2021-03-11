@@ -12,7 +12,7 @@ export const Header: React.FC = () => {
       <div>
         <FiCodesandbox size={40} />
 
-        <span>Bem vindo, {user.email}</span>
+        <span>Bem vindo, {user.displayName}</span>
 
         <Button onClick={signOut}>Sair</Button>
       </div>

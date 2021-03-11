@@ -16,25 +16,6 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const firestore = firebase.firestore();
 
-export const addActivity = (
-  activity: Activity,
-  userId: string,
-): Promise<
-  firebase.firestore.DocumentReference<firebase.firestore.DocumentData>
-> => {
-  return firestore.collection('activities').add({
-    created: firebase.firestore.FieldValue.serverTimestamp(),
-    createdBy: userId,
-    ...activity,
-    events: [
-      {
-        type: 'create',
-        created: new Date(),
-      },
-    ],
-  });
-};
-
 export const emailSignIn = (
   email: string,
   password: string,
@@ -53,6 +34,44 @@ export const emailRecovery = (email: string): Promise<void> => {
   return auth.sendPasswordResetEmail(email);
 };
 
+export const addUser = (user: {
+  email: string | null;
+  displayName: string | null;
+  uid: string;
+}): Promise<
+  firebase.firestore.DocumentReference<firebase.firestore.DocumentData>
+> => {
+  return firestore.collection('users').add({
+    created: firebase.firestore.FieldValue.serverTimestamp(),
+    ...user,
+  });
+};
+
+export const getUsers = (): Promise<
+  firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+> => {
+  return firestore.collection('users').orderBy('created').get();
+};
+
+export const addActivity = (
+  activity: Activity,
+  userId: string,
+): Promise<
+  firebase.firestore.DocumentReference<firebase.firestore.DocumentData>
+> => {
+  return firestore.collection('activities').add({
+    created: firebase.firestore.FieldValue.serverTimestamp(),
+    ...activity,
+    events: [
+      {
+        type: 'create',
+        created: new Date(),
+        user: userId,
+      },
+    ],
+  });
+};
+
 export const getActivity = (
   activityId: string,
 ): Promise<
@@ -62,7 +81,6 @@ export const getActivity = (
 };
 
 export const getActivities = (
-  userId: string,
   status?: string,
 ): Promise<
   firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
@@ -70,24 +88,22 @@ export const getActivities = (
   if (status) {
     return firestore
       .collection('activities')
-      .where('createdBy', '==', userId)
       .where('status', '==', status)
       .orderBy('created')
       .get();
   }
 
-  return firestore
-    .collection('activities')
-    .where('createdBy', '==', userId)
-    .orderBy('created')
-    .get();
+  return firestore.collection('activities').orderBy('created').get();
 };
 
 export const deleteActivity = (actitivyId: string): Promise<void> => {
   return firestore.collection('activities').doc(actitivyId).delete();
 };
 
-export const editActivityStatus = (activity: Activity): Promise<void> => {
+export const editActivityStatus = (
+  activity: Activity,
+  userId: string,
+): Promise<void> => {
   return firestore
     .collection('activities')
     .doc(activity.id)
@@ -98,12 +114,16 @@ export const editActivityStatus = (activity: Activity): Promise<void> => {
         {
           type: 'edit-status',
           created: new Date(),
+          user: userId,
         },
       ],
     });
 };
 
-export const editActivityUser = (activity: Activity): Promise<void> => {
+export const editActivityUser = (
+  activity: Activity,
+  userId: string,
+): Promise<void> => {
   return firestore
     .collection('activities')
     .doc(activity.id)
@@ -114,6 +134,7 @@ export const editActivityUser = (activity: Activity): Promise<void> => {
         {
           type: 'edit-user',
           created: new Date(),
+          user: userId,
         },
       ],
     });

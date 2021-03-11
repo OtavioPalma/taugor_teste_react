@@ -67,7 +67,12 @@ export const StatusModal: React.FC<ModalProps> = ({
               placeholder="Escolha um Status"
               value={form.status}
               onChange={handleFormChange}
-              options={['Pendente', 'Em andamento', 'Finalizada', 'Cancelada']}
+              options={[
+                { name: 'Pendente', value: 'pending' },
+                { name: 'Em andamento', value: 'running' },
+                { name: 'Finalizada', value: 'finished' },
+                { name: 'Cancelada', value: 'cancelled' },
+              ]}
             />
 
             <div className={styles.container_submit}>

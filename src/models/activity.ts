@@ -10,4 +10,5 @@ export interface Activity {
 interface ActivityEvent {
   type: 'create' | 'edit-status' | 'edit-user';
   created: { seconds: number };
+  user: string;
 }

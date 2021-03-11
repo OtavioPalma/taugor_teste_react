@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { FiArrowLeft, FiLock, FiUser } from 'react-icons/fi';
+import { FiArrowLeft, FiAtSign, FiLock, FiUser } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Button } from '../../components/Button/Button';
@@ -11,8 +11,9 @@ import styles from './styles.module.scss';
 
 export const SignUp: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [formErrors, setFormErrors] = useState({
+    name: undefined,
     email: undefined,
     password: undefined,
   });
@@ -32,9 +33,10 @@ export const SignUp: React.FC = () => {
     try {
       setLoading(true);
 
-      setFormErrors({ email: undefined, password: undefined });
+      setFormErrors({ name: undefined, email: undefined, password: undefined });
 
       const schema = Yup.object().shape({
+        name: Yup.string().required('Nome é obrigatório'),
         email: Yup.string()
           .required('E-mail é obrigatório')
           .email('Digite um e-mail válido'),
@@ -46,13 +48,15 @@ export const SignUp: React.FC = () => {
 
       await schema.validate(form, { abortEarly: false });
 
-      await signUp(form.email, form.password);
+      await signUp(form.email, form.password, form.name);
 
       addToast({
         type: 'success',
         title: 'Conta criada',
       });
     } catch (err) {
+      setLoading(false);
+
       if (err instanceof Yup.ValidationError) {
         err.inner.forEach(error => {
           setFormErrors(state => ({
@@ -69,8 +73,6 @@ export const SignUp: React.FC = () => {
         title: 'Erro',
         description: firebaseErrors[(err as FirebaseError).code],
       });
-
-      setLoading(false);
     }
   }, [form, signUp, addToast]);
 
@@ -80,13 +82,23 @@ export const SignUp: React.FC = () => {
         <h1>Cadastro</h1>
         <p>Crie sua conta para acessar o sistema.</p>
 
+        <span>Nome</span>
+        <Input
+          name="name"
+          value={form.name}
+          onChange={handleFormChange}
+          placeholder="Digite seu nome"
+          icon={FiUser}
+          error={formErrors.name}
+        />
+
         <span>E-mail</span>
         <Input
           name="email"
           value={form.email}
           onChange={handleFormChange}
           placeholder="Digite um e-mail"
-          icon={FiUser}
+          icon={FiAtSign}
           error={formErrors.email}
         />
 
