@@ -90,9 +90,14 @@ header {
       div {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: space-between;
 
         gap: 10px;
+      }
+
+      > a {
+        text-decoration: none;
+        color: #f2f6fe;
       }
 
       svg {

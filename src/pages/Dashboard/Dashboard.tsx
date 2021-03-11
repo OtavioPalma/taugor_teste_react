@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   FiAlertCircle,
   FiCheckCircle,
+  FiChevronRight,
   FiCodesandbox,
   FiEdit2,
   FiPlus,
@@ -9,6 +10,7 @@ import {
   FiX,
 } from 'react-icons/fi';
 import Loader from 'react-loader-spinner';
+import { Link } from 'react-router-dom';
 import { AddModal } from '../../components/AddModal/AddModal';
 import { Button } from '../../components/Button/Button';
 import { Select } from '../../components/Select/Select';
@@ -202,7 +204,15 @@ export const Dashboard: React.FC = () => {
               <tbody>
                 {activities.map(activity => (
                   <tr key={activity.id}>
-                    <td>{activity.title}</td>
+                    <td>
+                      <Link to={`activity/${activity.id}`}>
+                        <div>
+                          {activity.title}
+
+                          <FiChevronRight size={20} />
+                        </div>
+                      </Link>
+                    </td>
                     <td>{activity.status}</td>
                     <td>{activity.user}</td>
                     <td>

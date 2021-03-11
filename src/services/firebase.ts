@@ -35,6 +35,14 @@ export const addActivity = (
   });
 };
 
+export const getActivity = (
+  activityId: string,
+): Promise<
+  firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
+> => {
+  return firestore.collection('activities').doc(activityId).get();
+};
+
 export const getActivities = (
   userId: string,
   status?: string,
