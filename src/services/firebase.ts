@@ -4,12 +4,12 @@ import 'firebase/firestore';
 import { Activity } from '../models/activity';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAl1aO7tkbBDgCOK1AGx0XGTmPEVQspjrE',
-  authDomain: 'taugor-react-app.firebaseapp.com',
-  projectId: 'taugor-react-app',
-  storageBucket: 'taugor-react-app.appspot.com',
-  messagingSenderId: '427492510140',
-  appId: '1:427492510140:web:3a7d6f6f669b12809c03b9',
+  apiKey: process.env.REACT_APP_TAUGOR_API_KEY,
+  authDomain: process.env.REACT_APP_TAUGOR_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_TAUGOR_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_TAUGOR_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_TAUGOR_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_TAUGOR_APP_ID,
 };
 
 firebase.initializeApp(firebaseConfig);

@@ -81,6 +81,8 @@ header {
 
       border-bottom: 1px solid #ffffff10;
 
+      transition: background-color 0.2s;
+
       &:not(:last-of-type) {
         border-right: 2px solid #fff;
       }
@@ -101,6 +103,11 @@ header {
           transform: scale(1.2);
         }
       }
+    }
+
+    td:first-of-type:hover {
+      cursor: pointer;
+      background-color: #263342;
     }
   }
 }
