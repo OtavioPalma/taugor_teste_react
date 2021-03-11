@@ -13,7 +13,7 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-export const auth = firebase.auth();
+const auth = firebase.auth();
 const firestore = firebase.firestore();
 
 export const addActivity = (
@@ -33,6 +33,20 @@ export const addActivity = (
       },
     ],
   });
+};
+
+export const emailSignIn = (
+  email: string,
+  password: string,
+): Promise<firebase.auth.UserCredential> => {
+  return auth.signInWithEmailAndPassword(email, password);
+};
+
+export const emailSignUp = (
+  email: string,
+  password: string,
+): Promise<firebase.auth.UserCredential> => {
+  return auth.createUserWithEmailAndPassword(email, password);
 };
 
 export const getActivity = (
