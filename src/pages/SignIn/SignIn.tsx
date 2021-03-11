@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Button } from '../../components/Button/Button';
 import { Input } from '../../components/Input/Input';
+import { RecoveryModal } from '../../components/RecoveryModal/RecoveryModal';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import { FirebaseError, firebaseErrors } from '../../models/firebase';
@@ -11,13 +12,14 @@ import styles from './styles.module.scss';
 
 export const SignIn: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [showRecoveryModal, setShowRecoveryModal] = useState(false);
   const [form, setForm] = useState({ email: '', password: '' });
   const [formErrors, setFormErrors] = useState({
     email: undefined,
     password: undefined,
   });
 
-  const { signIn } = useAuth();
+  const { signIn, recovery } = useAuth();
   const { addToast } = useToast();
 
   const handleFormChange = useCallback(
@@ -26,6 +28,37 @@ export const SignIn: React.FC = () => {
       setForm({ ...form, [name]: value });
     },
     [form],
+  );
+
+  const handleCloseModal = () => {
+    setShowRecoveryModal(false);
+  };
+
+  const handleSendRecovery = useCallback(
+    async (email: string) => {
+      try {
+        setShowRecoveryModal(false);
+
+        await recovery(email);
+
+        addToast({
+          type: 'success',
+          title: 'E-mail enviado',
+          description:
+            'Acesse seu e-mail para instruções de recuperação de senha',
+          duration: 5000,
+        });
+      } catch (err) {
+        addToast({
+          type: 'error',
+          title: 'Erro',
+          description: firebaseErrors[(err as FirebaseError).code],
+        });
+
+        setLoading(false);
+      }
+    },
+    [addToast, recovery],
   );
 
   const handleFormSubmit = useCallback(async () => {
@@ -84,7 +117,10 @@ export const SignIn: React.FC = () => {
 
         <div className={styles.container_forgot}>
           <span>Senha</span>
-          <Link to="forgot">Esqueceu sua senha?</Link>
+
+          <button type="button" onClick={() => setShowRecoveryModal(true)}>
+            Esqueceu sua senha?
+          </button>
         </div>
         <Input
           name="password"
@@ -106,6 +142,12 @@ export const SignIn: React.FC = () => {
           <Link to="signup">Cadastre-se</Link>
         </div>
       </div>
+
+      <RecoveryModal
+        visible={showRecoveryModal}
+        onClose={handleCloseModal}
+        onSave={handleSendRecovery}
+      />
     </div>
   );
 };

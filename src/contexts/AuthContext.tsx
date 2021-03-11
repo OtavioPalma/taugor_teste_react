@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useState } from 'react';
 import { AuthContextData, AuthState } from '../models/auth';
-import { emailSignIn, emailSignUp } from '../services/firebase';
+import { emailRecovery, emailSignIn, emailSignUp } from '../services/firebase';
 
 export const AuthContext = createContext<AuthContextData>(
   {} as AuthContextData,
@@ -39,13 +39,19 @@ export const AuthProvider: React.FC = ({ children }) => {
     localStorage.setItem('@Taugor:user', JSON.stringify(user));
   }, []);
 
+  const recovery = useCallback(async email => {
+    await emailRecovery(email);
+  }, []);
+
   const signOut = useCallback(() => {
     setData({} as AuthState);
     localStorage.removeItem('@Taugor:user');
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn, signUp, signOut }}>
+    <AuthContext.Provider
+      value={{ user: data.user, signIn, signUp, recovery, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   );

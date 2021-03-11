@@ -49,6 +49,10 @@ export const emailSignUp = (
   return auth.createUserWithEmailAndPassword(email, password);
 };
 
+export const emailRecovery = (email: string): Promise<void> => {
+  return auth.sendPasswordResetEmail(email);
+};
+
 export const getActivity = (
   activityId: string,
 ): Promise<
